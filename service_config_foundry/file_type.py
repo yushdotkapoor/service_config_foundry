@@ -1,7 +1,6 @@
 import enum
 from .sections import *
 from .utils import convert_to_camel_case
-from .config_parser import CaseSensitiveConfigParser
 
 # `FileType` is an enumeration that defines various systemd file types, such as service, socket, and timer.
 # Each file type corresponds to a specific configuration file in the systemd ecosystem.
@@ -103,12 +102,8 @@ class FileType(enum.Enum):
         # Validate the configuration against the required sections if `requirement_check` is True.
         if requirement_check:
             self.check_requirements(config_dict)
-
-        # Create and populate a case-sensitive configuration parser with the dictionary.
-        config = CaseSensitiveConfigParser()
-        config.read_dict(config_dict, source='<string>')
         
-        return config
+        return config_dict
 
     # Determines if a given section is allowed in the current file type.
     def is_allowed(self, section):

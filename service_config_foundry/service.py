@@ -111,26 +111,34 @@ class Service:
     # Replaces the existing service configuration files with new ones.
     def replace(self):
         config_and_path = {}
-        # Prepare configurations and paths for atomic replacement.
-        for file, config in self.__file_configs():
+        
+        # Prepare configurations and paths for atomic replacement
+        for file, config_dict in self.__file_configs(requirement_check=False):
             path = self.__get_path(file)
-            config_dict = defaultdict(list)
-            for section, options in config._sections.items():
-                config_dict[section] = defaultdict(list, options)
             config_and_path[path] = config_dict
 
-        # Delete old configurations before writing new ones.
+        # Delete old configurations before writing new ones
         self.delete()
 
-        # Write the new configurations to their respective files.
-        for path, config in config_and_path.items():
+        # Write the new configurations to their respective files
+        for path, config_dict in config_and_path.items():
             try:
                 with open(path, "w") as f:
-                    config.write(f)
+                    f.write(f"[{path}]\n")
+                    for section, options in config_dict.items():
+                        f.write(f"[{section}]\n")
+                        for key, values in options.items():
+                            if not isinstance(values, list):
+                                f.write(f"{key} = {values}\n")
+                            else:
+                                for value in values:
+                                    f.write(f"{key} = {value}\n")
+                        f.write("\n")
             except PermissionError:
                 print(f"Permission denied: cannot write to {path}. Try running as root or using sudo.")
                 sys.exit(1)
-        
+
+        # Reload the systemd daemon to apply changes
         run_command(f"systemctl daemon-reload")
 
         if self._auto_start:
@@ -145,7 +153,7 @@ class Service:
 
         # Find relevant files associated with the service.
         relevant_files = []
-        for file in os.listdir(temp_service.service_location.directory()):
+        for file in os.listdir(temp_service._service_location.directory()):
             if file.startswith(f"{temp_service.name}."):
                 relevant_files.append(file)
         
@@ -154,26 +162,20 @@ class Service:
 
         # Collect current and new configurations.
         config_and_path = {}
-        for file, config in self.__file_configs(requirement_check=False):
+        for file, config_dict in self.__file_configs(requirement_check=False):
             path = self.__get_path(file)
-            config_dict = defaultdict(list)
-            for section, options in config._sections.items():
-                config_dict[section] = defaultdict(list, options)
             config_and_path[path] = config_dict
         
         # Add attributes from relevant files to the temporary service.
         for file in relevant_files:
             config = CaseSensitiveConfigParser()
-            config.read(os.path.join(temp_service.service_location.directory(), file))
+            config.read(os.path.join(temp_service._service_location.directory(), file))
             temp_service.__add_attributes(file, config)
 
         # Merge the original and new configurations.
         original_config_and_path = {}
-        for file, config in temp_service.__file_configs(requirement_check=False):
+        for file, config_dict in temp_service.__file_configs(requirement_check=False):
             path = temp_service.__get_path(file)
-            config_dict = defaultdict(list)
-            for section, options in config._sections.items():
-                config_dict[section] = defaultdict(list, options)
             original_config_and_path[path] = config_dict
         
         final_config_and_path = {}
