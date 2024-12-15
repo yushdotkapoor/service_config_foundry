@@ -11,8 +11,12 @@
 - Fully integrated Python API with no external dependencies
 
 ## Installation
+You can install the library using `pip`:
+```bash
+pip install service_config_foundry
+```
 
-You can install the library using `pip` directly from the GitHub repository:
+Or you can install the library using `pip` directly from the GitHub repository:
 
 ```bash
 pip install git+https://github.com/yushdotkapoor/service_config_foundry.git
