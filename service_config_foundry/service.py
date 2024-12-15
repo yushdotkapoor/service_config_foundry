@@ -1,4 +1,5 @@
 import os
+import sys
 from .sections import *
 from .service_location import ServiceLocation
 from .file_type import FileType
@@ -13,10 +14,10 @@ class Service:
     # Sets up default file types associated with the service.
     def __init__(self, name, service_location=ServiceLocation.GLOBAL, auto_start=True, enable_at_startup=False, force_overwrite=False):
         self.name = name
-        self.service_location = service_location
-        self.force_overwrite = force_overwrite
-        self.auto_start = auto_start
-        self.enable_at_startup = enable_at_startup
+        self._service_location = service_location
+        self._force_overwrite = force_overwrite
+        self._auto_start = auto_start
+        self._enable_at_startup = enable_at_startup
         # Define file types associated with the service.
         self.service_file = FileType.SERVICE
         self.socket_file = FileType.SOCKET
@@ -32,7 +33,7 @@ class Service:
 
     # Returns the full path for a specific configuration file.
     def __get_path(self, file):
-        return self.service_location.directory() + "/" + file.file_name(self.name)
+        return self._service_location.directory() + "/" + file.file_name(self.name)
     
     # Yields the configurations of all file types, optionally checking requirements.
     def __file_configs(self, requirement_check=True):
@@ -44,7 +45,7 @@ class Service:
     # Checks if any files for the service name already exist in the directory.
     def __service_with_name_exists(self):
         files = []
-        for file in os.listdir(self.service_location.directory()):
+        for file in os.listdir(self._service_location.directory()):
             if file.startswith(f"{self.name}."):
                 files.append(file)
         return files
@@ -87,31 +88,31 @@ class Service:
     
     # Displays the status of the service.
     def status(self):
-        run_command(f"systemctl status {self.name}")
+        run_command(f"systemctl status {self.name}", use_sudo=False)
 
     # Creates the service configuration files.
     def create(self):
-        if self.__service_with_name_exists() and not self.force_overwrite:
+        if self.__service_with_name_exists() and not self._force_overwrite:
             raise ValueError(f"Service for {self.name} already exists")
         
         self.replace()
 
     # Deletes all files associated with the service name.
     def delete(self):
-        for file in os.listdir(self.service_location.directory()):
+        for file in os.listdir(self._service_location.directory()):
             if file.startswith(f"{self.name}."):
                 try:
-                    os.remove(os.path.join(self.service_location.directory(), file))
+                    os.remove(os.path.join(self._service_location.directory(), file))
                 except PermissionError:
                     print(f"Permission denied: cannot write to {file}. Try running as root or using sudo.")
-                    raise
+                    sys.exit(1)
 
     # Replaces the existing service configuration files with new ones.
     def replace(self):
         config_and_path = {}
         # Prepare configurations and paths for atomic replacement.
         for file, config in self.__file_configs():
-            path = self.get_path(file)
+            path = self.__get_path(file)
             config_and_path[path] = config
 
         # Delete old configurations before writing new ones.
@@ -124,16 +125,19 @@ class Service:
                     config.write(f)
             except PermissionError:
                 print(f"Permission denied: cannot write to {path}. Try running as root or using sudo.")
-                raise
-        if self.auto_start:
+                sys.exit(1)
+        
+        run_command(f"systemctl daemon-reload")
+
+        if self._auto_start:
             self.start_service()
 
-        if self.enable_at_startup:
+        if self._enable_at_startup:
             self.enable_service_at_startup()
 
     # Updates the service with new configurations.
     def update(self):
-        temp_service = Service(name=self.name, service_location=self.service_location, force_overwrite=self.force_overwrite)
+        temp_service = Service(name=self.name, service_location=self._service_location, force_overwrite=self._force_overwrite)
 
         # Find relevant files associated with the service.
         relevant_files = []

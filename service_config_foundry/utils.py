@@ -40,16 +40,12 @@ def merge_dicts(dict1, dict2):
     
     return dict1
 
-# Runs a shell command and returns the result.
-# - If use_sudo is True, the command is run with sudo.
-# - Handles keyboard interrupts (Ctrl+C) by terminating the subprocess.
 def run_command(command, use_sudo=True):
     """Run a shell command with proper signal handling and return the result."""
     if use_sudo:
         command = f"sudo {command}"
 
     try:
-        # Start the subprocess with the given command.
         process = subprocess.Popen(
             command,
             shell=True,
@@ -59,13 +55,16 @@ def run_command(command, use_sudo=True):
             preexec_fn=os.setsid
         )
 
-        # Wait for the command to complete and get the output and error.
         stdout, stderr = process.communicate()
+
+        # Log the standard error if it exists
+        if stderr:
+            print(f"Error encountered while running command:\n{stderr}")
+
         return subprocess.CompletedProcess(
             args=command, returncode=process.returncode, stdout=stdout, stderr=stderr
         )
     except KeyboardInterrupt:
-        # Handle keyboard interrupt (Ctrl+C) and terminate the subprocess.
         print("\nTerminating subprocess...")
         os.killpg(process.pid, signal.SIGINT)
         process.terminate()
@@ -74,7 +73,6 @@ def run_command(command, use_sudo=True):
             args=command, returncode=process.returncode, stdout=stdout, stderr=stderr
         )
     finally:
-        # Ensure the subprocess is terminated if it is still running.
-        if process.returncode is None:
+        if process and process.returncode is None:
             process.terminate()
             process.wait()
