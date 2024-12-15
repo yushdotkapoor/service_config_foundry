@@ -1,0 +1,6 @@
+*/.DS_Store
+.gitattributes
+*/.idea
+*/.vscode
+*/.dist
+*__pycache__*
