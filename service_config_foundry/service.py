@@ -1,5 +1,6 @@
 import os
 import sys
+from collections import defaultdict
 from .sections import *
 from .service_location import ServiceLocation
 from .file_type import FileType
@@ -113,7 +114,10 @@ class Service:
         # Prepare configurations and paths for atomic replacement.
         for file, config in self.__file_configs():
             path = self.__get_path(file)
-            config_and_path[path] = config
+            config_dict = defaultdict(list)
+            for section, options in config._sections.items():
+                config_dict[section] = defaultdict(list, options)
+            config_and_path[path] = config_dict
 
         # Delete old configurations before writing new ones.
         self.delete()
@@ -152,7 +156,10 @@ class Service:
         config_and_path = {}
         for file, config in self.__file_configs(requirement_check=False):
             path = self.__get_path(file)
-            config_and_path[path] = config._sections
+            config_dict = defaultdict(list)
+            for section, options in config._sections.items():
+                config_dict[section] = defaultdict(list, options)
+            config_and_path[path] = config_dict
         
         # Add attributes from relevant files to the temporary service.
         for file in relevant_files:
@@ -164,7 +171,10 @@ class Service:
         original_config_and_path = {}
         for file, config in temp_service.__file_configs(requirement_check=False):
             path = temp_service.__get_path(file)
-            original_config_and_path[path] = config._sections
+            config_dict = defaultdict(list)
+            for section, options in config._sections.items():
+                config_dict[section] = defaultdict(list, options)
+            original_config_and_path[path] = config_dict
         
         final_config_and_path = {}
         for path in set(original_config_and_path.keys()).union(set(config_and_path.keys())):
