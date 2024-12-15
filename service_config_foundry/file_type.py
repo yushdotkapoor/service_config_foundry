@@ -1,7 +1,7 @@
 import enum
-from sections import *
-from utils import convert_to_camel_case
-from config_parser import CaseSensitiveConfigParser
+from .sections import *
+from .utils import convert_to_camel_case
+from .config_parser import CaseSensitiveConfigParser
 
 # `FileType` is an enumeration that defines various systemd file types, such as service, socket, and timer.
 # Each file type corresponds to a specific configuration file in the systemd ecosystem.
