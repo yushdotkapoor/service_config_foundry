@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Load the long description from README.md
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -22,6 +22,6 @@ setup(
         "Operating System :: OS Independent",
         "Intended Audience :: Linux & Python users",
     ],
-    packages=["find:"],  # Automatically finds packages in the project
+    packages=find_packages(),  # Automatically finds packages in the project
     python_requires=">=3.0",
 )
