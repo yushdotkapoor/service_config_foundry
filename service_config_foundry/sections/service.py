@@ -1,9 +1,3 @@
-import enum
-
-class Type(enum.Enum):
-    SIMPLE, EXEC, FORKING, ONESHOT, DBUS, NOTIFY, NOTIFY_RELOAD, IDLE = range(8)
-
-
 class ServiceSection:
     def __init__(self):
         self.unit_name = "Service"
