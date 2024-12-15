@@ -5,8 +5,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="service-config-foundry",
-    version="0.1",
+    name="service_config_foundry",
+    version="0.2",
     author="Yush Kapoor",
     author_email="yushdotkapoor@gmail.com",
     description="Helps create non-templated systemd services.",
@@ -20,7 +20,7 @@ setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Intended Audience :: Linux & Python users",
+        "Intended Audience :: Developers",
     ],
     packages=find_packages(),  # Automatically finds packages in the project
     python_requires=">=3.0",
