@@ -2,8 +2,9 @@ import os
 from sections import *
 from service_location import ServiceLocation
 from file_type import FileType
-from utils import convert_to_snake_case, merge_dicts
+from utils import convert_to_snake_case, merge_dicts, run_command
 from config_parser import CaseSensitiveConfigParser
+import subprocess
 
 # The `Service` class represents a system service with various configuration files
 # (e.g., service, socket, timer) and provides methods to create, update, replace,
@@ -11,10 +12,12 @@ from config_parser import CaseSensitiveConfigParser
 class Service:
     # Initializes a Service instance with a name, location, and overwrite flag.
     # Sets up default file types associated with the service.
-    def __init__(self, name, service_location=ServiceLocation.GLOBAL, force_overwrite=False):
+    def __init__(self, name, service_location=ServiceLocation.GLOBAL, auto_start=True, enable_at_startup=False, force_overwrite=False):
         self.name = name
         self.service_location = service_location
         self.force_overwrite = force_overwrite
+        self.auto_start = auto_start
+        self.enable_at_startup = enable_at_startup
         # Define file types associated with the service.
         self.service_file = FileType.SERVICE
         self.socket_file = FileType.SOCKET
@@ -73,11 +76,25 @@ class Service:
                 section_obj = getattr(file_type, section.lower(), None)
                 if section_obj:
                     setattr(section_obj, convert_to_snake_case(key), value)
+    
+    # Enables the service to start at boot time.
+    def enable_service_at_startup(self):
+        run_command(f"systemctl enable {self.name}")
+    
+    # Starts the service.
+    def start_service(self):
+        # Restart the service to apply the new configurations. This will work even if the service is new.
+        run_command(f"systemctl restart {self.name}")
+    
+    # Displays the status of the service.
+    def status(self):
+        run_command(f"systemctl status {self.name}")
 
     # Creates the service configuration files.
     def create(self):
         if self.__service_with_name_exists() and not self.force_overwrite:
             raise ValueError(f"Service for {self.name} already exists")
+        
         self.replace()
 
     # Deletes all files associated with the service name.
@@ -103,9 +120,18 @@ class Service:
 
         # Write the new configurations to their respective files.
         for path, config in config_and_path.items():
-            with open(path, "w") as f:
-                config.write(f)
-        
+            try:
+                with open(path, "w") as f:
+                    config.write(f)
+            except PermissionError:
+                print(f"Permission denied: cannot write to {path}. Try running as root or using sudo.")
+                raise
+        if self.auto_start:
+            self.start_service()
+
+        if self.enable_at_startup:
+            self.enable_service_at_startup()
+
     # Updates the service with new configurations.
     def update(self):
         temp_service = Service(name=self.name, service_location=self.service_location, force_overwrite=self.force_overwrite)

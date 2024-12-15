@@ -20,8 +20,6 @@ pip install git+https://github.com/yushdotkapoor/service-config-foundry.git
 
 Alternatively, clone the repository to get started:
 
-No dependencies are required to use this library. Simply clone the repository to get started:
-
 ```bash
 git clone https://github.com/yushdotkapoor/service-config-foundry.git
 cd service-config-foundry
@@ -38,7 +36,7 @@ from service import Service
 from service_location import ServiceLocation
 
 # Create a new service instance
-service = Service("example", service_location=ServiceLocation.GLOBAL, force_overwrite=True)
+service = Service("example", service_location=ServiceLocation.GLOBAL, auto_start=False, enable_at_startup=False, force_overwrite=False)
 
 # Configure the service file
 service_file = service.service_file
@@ -61,6 +59,15 @@ socket_file.install.wanted_by = "sockets.target"
 
 # Create or update the service, timer, and socket files
 service.update()
+
+# Enable the service to start at boot time
+service.enable_service_at_startup()
+
+# Start the service
+service.start_service()
+
+# Display the status of the service
+service.status()
 ```
 
 ### Output Files
