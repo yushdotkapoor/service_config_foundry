@@ -1,6 +1,6 @@
-# service-config-foundry
+# service_config_foundry
 
-**service-config-foundry** is a Python-based library that simplifies the process of creating, updating, replacing, and deleting systemd service files for Linux users. With this tool, you can easily manage systemd services programmatically, reducing the complexity of writing and maintaining service configuration files manually.
+**service_config_foundry** is a Python-based library that simplifies the process of creating, updating, replacing, and deleting systemd service files for Linux users. With this tool, you can easily manage systemd services programmatically, reducing the complexity of writing and maintaining service configuration files manually.
 
 ## Features
 
@@ -11,29 +11,32 @@
 - Fully integrated Python API with no external dependencies
 
 ## Installation
+You can install the library using `pip`:
+```bash
+pip install service_config_foundry
+```
 
-You can install the library using `pip` directly from the GitHub repository:
+Or you can install the library using `pip` directly from the GitHub repository:
 
 ```bash
-pip install git+https://github.com/yushdotkapoor/service-config-foundry.git
+pip install git+https://github.com/yushdotkapoor/service_config_foundry.git
 ```
 
 Alternatively, clone the repository to get started:
 
 ```bash
-git clone https://github.com/yushdotkapoor/service-config-foundry.git
-cd service-config-foundry
+git clone https://github.com/yushdotkapoor/service_config_foundry.git
+cd service_config_foundry
 ```
 
 ## Usage
 
-Below are detailed examples of how to use `service-config-foundry` to create and manage systemd files of various types.
+Below are detailed examples of how to use `service_config_foundry` to create and manage systemd files of various types.
 
 ### Example: Creating a Service, Timer, and Socket
 
 ```python
-from service import Service
-from service_location import ServiceLocation
+from service_config_foundry import Service, ServiceLocation
 
 # Create a new service instance
 service = Service("example", service_location=ServiceLocation.GLOBAL, auto_start=False, enable_at_startup=False, force_overwrite=False)
@@ -253,7 +256,7 @@ This will remove all files matching the service name in the systemd directory.
 
 ## Configuration Options
 
-`service-config-foundry` supports multiple systemd file types, including:
+`service_config_foundry` supports multiple systemd file types, including:
 
 - `.service` - Main service configuration
 - `.socket` - Socket configuration
@@ -277,7 +280,7 @@ Contributions are welcome! If you encounter any issues or have suggestions for i
 
 - **Author**: Yush Kapoor  
 - **Email**: [yushdotkapoor@gmail.com](mailto:yushdotkapoor@gmail.com)  
-- **GitHub**: [https://github.com/yushdotkapoor/service-config-foundry](https://github.com/yushdotkapoor/service-config-foundry)
+- **GitHub**: [https://github.com/yushdotkapoor/service_config_foundry](https://github.com/yushdotkapoor/service_config_foundry)
 
 ## Acknowledgments
 
