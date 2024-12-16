@@ -1,6 +1,5 @@
 import os
 import sys
-from collections import defaultdict
 from .sections import *
 from .service_location import ServiceLocation
 from .file_type import FileType

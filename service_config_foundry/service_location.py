@@ -1,5 +1,4 @@
 import enum
-from pathlib import Path
 
 # `ServiceLocation` is an enumeration that represents different systemd service locations.
 # Each location corresponds to a specific directory in the filesystem where systemd service
@@ -32,6 +31,6 @@ class ServiceLocation(enum.Enum):
             # allowing for user-specific configurations.
             return "~/.config/systemd/user"
         elif self == ServiceLocation.TEST:
-            # TEST location returns the directory of the current script file.
+            # TEST location returns the current working directory for testing purposes.
             # This is typically used for testing or development purposes.
-            return str(Path(__file__).resolve().parent)
+            return "./"
