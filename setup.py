@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="service_config_foundry",
-    version="0.4",
+    version="0.4.1",
     author="Yush Kapoor",
     author_email="yushdotkapoor@gmail.com",
     description="Helps create non-templated systemd services.",
