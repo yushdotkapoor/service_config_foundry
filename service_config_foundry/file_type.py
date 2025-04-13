@@ -115,12 +115,9 @@ class File():
         config_dict = {}
         # Whitelist specifies which attributes should be included in the configuration.
         whitelist = ["_unit", "_install", "_service", "_socket", "_mount", "_automount", "_swap", "_path", "_timer"]
-        print(self.__dict__.items())
         for section, unit in self.__dict__.items():
-
             if section in whitelist and unit:
                 blacklist = ["unit_name"]  # Exclude specific keys from the configuration.
-                print(unit.__dict__.items())
                 for key, value in unit.__dict__.items():
                     if key not in blacklist and value is not None:
                         # Convert keys to camel case and add them to the config dictionary.

@@ -123,8 +123,6 @@ class Service:
         for path, config_dict in config_and_path.items():
             try:
                 with open(path, "w") as f:
-                    if path == "/etc/systemd/system/pantheon_reboot.timer":
-                        print(config_dict)
                     for section, options in config_dict.items():
                         f.write(f"[{section}]\n")
                         for key, values in options.items():
