@@ -2,24 +2,9 @@ import enum
 from .sections import *
 from .utils import convert_to_camel_case
 
-# `FileType` is an enumeration that defines various systemd file types, such as service, socket, and timer.
-# Each file type corresponds to a specific configuration file in the systemd ecosystem.
 class FileType(enum.Enum):
     # Defines the file types with their associated integer values.
     SERVICE, SOCKET, TARGET, MOUNT, AUTOMOUNT, SWAP, PATH, TIMER, DEVICE, SLICE, SCOPE = range(11)
-
-    # Initializes default attributes for each file type. These attributes represent sections
-    # that may be included in the configuration for a file type.
-    def __init__(self, *args):
-        self._unit = None
-        self._install = None
-        self._service = None
-        self._socket = None
-        self._mount = None
-        self._automount = None
-        self._swap = None
-        self._path = None
-        self._timer = None
 
     # Returns a list of required sections for a specific file type.
     def requirements(self):
@@ -75,36 +60,6 @@ class FileType(enum.Enum):
 
         return f"{name}.{tag}"
     
-    # Checks if the required sections are present in the provided configuration dictionary.
-    def check_requirements(self, config_dict):
-        required = self.requirements()
-        for section in required:
-            if section not in config_dict:
-                raise ValueError(f"Section {section} is required in {self} file")
-    
-    # Creates a configuration parser from the object's attributes and validates the requirements if specified.
-    def get_config(self, requirement_check):
-        config_dict = {}
-        # Whitelist specifies which attributes should be included in the configuration.
-        whitelist = ["_unit", "_install", "_service", "_socket", "_mount", "_automount", "_swap", "_path", "_timer"]
-        for section, unit in self.__dict__.items():
-            if section in whitelist and unit:
-                blacklist = ["unit_name"]  # Exclude specific keys from the configuration.
-                for key, value in unit.__dict__.items():
-                    if key not in blacklist and value:
-                        # Convert keys to camel case and add them to the config dictionary.
-                        config_dict.setdefault(unit.unit_name, {})[convert_to_camel_case(key)] = value
-        
-        # If the configuration dictionary is empty, return None.
-        if not config_dict:
-            return None
-        
-        # Validate the configuration against the required sections if `requirement_check` is True.
-        if requirement_check:
-            self.check_requirements(config_dict)
-        
-        return config_dict
-
     # Determines if a given section is allowed in the current file type.
     def is_allowed(self, section):
         if self == FileType.SERVICE:
@@ -129,11 +84,62 @@ class FileType(enum.Enum):
             return section in ["Unit", "Slice"]
         elif self == FileType.SCOPE:
             return section in ["Unit"]
+    
+    # Checks if the required sections are present in the provided configuration dictionary.
+    def check_requirements(self, config_dict):
+        required = self.requirements()
+        for section in required:
+            if section not in config_dict:
+                raise ValueError(f"Section {section} is required in {self} file")
+    
+# `FileType` is an enumeration that defines various systemd file types, such as service, socket, and timer.
+# Each file type corresponds to a specific configuration file in the systemd ecosystem.
+class File():
+
+    # Initializes default attributes for each file type. These attributes represent sections
+    # that may be included in the configuration for a file type.
+    def __init__(self, file_type, *args):
+        self._file_type = file_type
+        self._unit = None
+        self._install = None
+        self._service = None
+        self._socket = None
+        self._mount = None
+        self._automount = None
+        self._swap = None
+        self._path = None
+        self._timer = None
+
+    # Creates a configuration parser from the object's attributes and validates the requirements if specified.
+    def get_config(self, requirement_check):
+        config_dict = {}
+        # Whitelist specifies which attributes should be included in the configuration.
+        whitelist = ["_unit", "_install", "_service", "_socket", "_mount", "_automount", "_swap", "_path", "_timer"]
+        print(self.__dict__.items())
+        for section, unit in self.__dict__.items():
+
+            if section in whitelist and unit:
+                blacklist = ["unit_name"]  # Exclude specific keys from the configuration.
+                print(unit.__dict__.items())
+                for key, value in unit.__dict__.items():
+                    if key not in blacklist and value is not None:
+                        # Convert keys to camel case and add them to the config dictionary.
+                        config_dict.setdefault(unit.unit_name, {})[convert_to_camel_case(key)] = value
+        
+        # If the configuration dictionary is empty, return None.
+        if not config_dict:
+            return None
+        
+        # Validate the configuration against the required sections if `requirement_check` is True.
+        if requirement_check:
+            self._file_type.check_requirements(config_dict)
+        
+        return config_dict
 
     # Lazy-loaded property that provides access to the `Unit` section.
     @property
     def unit(self):
-        if not self.is_allowed("Unit"):
+        if not self._file_type.is_allowed("Unit"):
             raise ValueError(f"Unit is not allowed in {self} file")
         
         self._unit = self._unit or Unit()
@@ -142,7 +148,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Install` section.
     @property
     def install(self):
-        if not self.is_allowed("Install"):
+        if not self._file_type.is_allowed("Install"):
             raise ValueError(f"Install is not allowed in {self} file")
         
         self._install = self._install or Install()
@@ -151,7 +157,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Service` section.
     @property
     def service(self):
-        if not self.is_allowed("Service"):
+        if not self._file_type.is_allowed("Service"):
             raise ValueError(f"Service is not allowed in this {self} file")
         
         self._service = self._service or ServiceSection()
@@ -160,7 +166,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Socket` section.
     @property
     def socket(self):
-        if not self.is_allowed("Socket"):
+        if not self._file_type.is_allowed("Socket"):
             raise ValueError(f"Socket is not allowed in {self} file")
         
         self._socket = self._socket or Socket()
@@ -169,7 +175,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Mount` section.
     @property
     def mount(self):
-        if not self.is_allowed("Mount"):
+        if not self._file_type.is_allowed("Mount"):
             raise ValueError(f"Mount is not allowed in {self} file")
         
         self._mount = self._mount or Mount()
@@ -178,7 +184,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Automount` section.
     @property
     def automount(self):
-        if not self.is_allowed("Automount"):
+        if not self._file_type.is_allowed("Automount"):
             raise ValueError(f"Automount is not allowed in {self} file")
         
         self._automount = self._automount or Automount()
@@ -187,7 +193,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Swap` section.
     @property
     def swap(self):
-        if not self.is_allowed("Swap"):
+        if not self._file_type.is_allowed("Swap"):
             raise ValueError(f"Swap is not allowed in {self} file")
         
         self._swap = self._swap or Swap()
@@ -196,7 +202,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Path` section.
     @property
     def path(self):
-        if not self.is_allowed("Path"):
+        if not self._file_type.is_allowed("Path"):
             raise ValueError(f"Path is not allowed in {self} file")
         
         self._path = self._path or Path()
@@ -205,7 +211,7 @@ class FileType(enum.Enum):
     # Lazy-loaded property that provides access to the `Timer` section.
     @property
     def timer(self):
-        if not self.is_allowed("Timer"):
+        if not self._file_type.is_allowed("Timer"):
             raise ValueError(f"Timer is not allowed in {self} file")
         
         self._timer = self._timer or Timer()

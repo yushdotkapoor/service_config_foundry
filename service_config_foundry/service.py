@@ -2,7 +2,7 @@ import os
 import sys
 from .sections import *
 from .service_location import ServiceLocation
-from .file_type import FileType
+from .file_type import File, FileType
 from .utils import convert_to_snake_case, merge_dicts, run_command
 from .config_parser import CaseSensitiveConfigParser
 
@@ -19,21 +19,21 @@ class Service:
         self._auto_start = auto_start
         self._enable_at_startup = enable_at_startup
         # Define file types associated with the service.
-        self.service_file = FileType.SERVICE
-        self.socket_file = FileType.SOCKET
-        self.target_file = FileType.TARGET
-        self.mount_file = FileType.MOUNT
-        self.automount_file = FileType.AUTOMOUNT
-        self.swap_file = FileType.SWAP
-        self.path_file = FileType.PATH
-        self.timer_file = FileType.TIMER
-        self.device_file = FileType.DEVICE
-        self.slice_file = FileType.SLICE
-        self.scope_file = FileType.SCOPE
+        self.service_file = File(FileType.SERVICE)
+        self.socket_file = File(FileType.SOCKET)
+        self.target_file = File(FileType.TARGET)
+        self.mount_file = File(FileType.MOUNT)
+        self.automount_file = File(FileType.AUTOMOUNT)
+        self.swap_file = File(FileType.SWAP)
+        self.path_file = File(FileType.PATH)
+        self.timer_file = File(FileType.TIMER)
+        self.device_file = File(FileType.DEVICE)
+        self.slice_file = File(FileType.SLICE)
+        self.scope_file = File(FileType.SCOPE)
 
     # Returns the full path for a specific configuration file.
     def __get_path(self, file):
-        return self._service_location.directory() + "/" + file.file_name(self.name)
+        return self._service_location.directory() + "/" + file._file_type.file_name(self.name)
     
     # Yields the configurations of all file types, optionally checking requirements.
     def __file_configs(self, requirement_check=True):
@@ -123,6 +123,8 @@ class Service:
         for path, config_dict in config_and_path.items():
             try:
                 with open(path, "w") as f:
+                    if path == "/etc/systemd/system/pantheon_reboot.timer":
+                        print(config_dict)
                     for section, options in config_dict.items():
                         f.write(f"[{section}]\n")
                         for key, values in options.items():
