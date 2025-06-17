@@ -127,10 +127,12 @@ class Service:
                         f.write(f"[{section}]\n")
                         for key, values in options.items():
                             if not isinstance(values, list):
-                                f.write(f"{key} = {values}\n")
+                                f.write(f"{key}={values}\n")
                             else:
                                 for value in values:
-                                    f.write(f"{key} = {value}\n")
+                                    if type(value) is bool:
+                                        value = str(value).lower()
+                                    f.write(f"{key}={value}\n")
                         f.write("\n")
             except PermissionError:
                 print(f"Permission denied: cannot write to {path}. Try running as root or using sudo.")

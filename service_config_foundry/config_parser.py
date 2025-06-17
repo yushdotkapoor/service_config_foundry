@@ -70,5 +70,7 @@ class CaseSensitiveConfigParser(ConfigParser):
             fp.write(f"[{section}]\n")
             for key, values in self._sections[section].items():
                 for value in values:
-                    fp.write(f"{key} = {value}\n")
+                    if type(values) is bool:
+                        value = str(value).lower()
+                    fp.write(f"{key}={value}\n")
             fp.write("\n")
