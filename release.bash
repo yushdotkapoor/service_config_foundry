@@ -39,7 +39,7 @@ NEW_VERSION=$(grep "version=" setup.py | cut -d'"' -f2)
 echo "🎯 New version: $NEW_VERSION"
 
 # Commit version bump
-git add setup.py
+git add setup.py .bumpversion.cfg
 git commit -m "Bump version to $NEW_VERSION"
 
 # Run tests locally before tagging
