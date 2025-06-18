@@ -127,6 +127,8 @@ class Service:
                         f.write(f"[{section}]\n")
                         for key, values in options.items():
                             if not isinstance(values, list):
+                                if type(values) is bool:
+                                    values = str(values).lower()
                                 f.write(f"{key}={values}\n")
                             else:
                                 for value in values:

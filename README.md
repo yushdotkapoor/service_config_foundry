@@ -78,38 +78,38 @@ service.status()
 #### `example.service`
 ```ini
 [Unit]
-Description = Example service for demonstration purposes
+Description=Example service for demonstration purposes
 
 [Service]
-User = yushrajkapoor
-ExecStart = echo Hello, world >> /tmp/example.log
+User=yushrajkapoor
+ExecStart=echo Hello, world >> /tmp/example.log
 
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
 ```
 
 #### `example.timer`
 ```ini
 [Unit]
-Description = Example timer for demonstration purposes
+Description=Example timer for demonstration purposes
 
 [Timer]
-OnCalendar = *-*-* *:00:00
+OnCalendar=*-*-* *:00:00
 
 [Install]
-WantedBy = timers.target
+WantedBy=timers.target
 ```
 
 #### `example.socket`
 ```ini
 [Unit]
-Description = Example socket for demonstration purposes
+Description=Example socket for demonstration purposes
 
 [Socket]
-ListenStream = /run/example.sock
+ListenStream=/run/example.sock
 
 [Install]
-WantedBy = sockets.target
+WantedBy=sockets.target
 ```
 
 ### Example: Replacing an Existing Service
@@ -147,27 +147,27 @@ service.update()
 #### `example.mount`
 ```ini
 [Unit]
-Description = Example mount for demonstration purposes
+Description=Example mount for demonstration purposes
 
 [Mount]
-What = /dev/sda1
-Where = /mnt/example
-Type = ext4
+What=/dev/sda1
+Where=/mnt/example
+Type=ext4
 
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
 ```
 
 #### `example.automount`
 ```ini
 [Unit]
-Description = Example automount for demonstration purposes
+Description=Example automount for demonstration purposes
 
 [Automount]
-Where = /mnt/example
+Where=/mnt/example
 
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
 ```
 
 ### Example: Creating Swap and Path Files
@@ -192,25 +192,25 @@ service.update()
 #### `example.swap`
 ```ini
 [Unit]
-Description = Example swap for demonstration purposes
+Description=Example swap for demonstration purposes
 
 [Swap]
-What = /swapfile
+What=/swapfile
 
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
 ```
 
 #### `example.path`
 ```ini
 [Unit]
-Description = Example path for demonstration purposes
+Description=Example path for demonstration purposes
 
 [Path]
-PathExists = /tmp/example
+PathExists=/tmp/example
 
 [Install]
-WantedBy = multi-user.target
+WantedBy=multi-user.target
 ```
 
 ### Example: Creating Slice and Scope Files
@@ -232,16 +232,16 @@ service.update()
 #### `example.slice`
 ```ini
 [Unit]
-Description = Example slice for demonstration purposes
+Description=Example slice for demonstration purposes
 ```
 
 #### `example.scope`
 ```ini
 [Unit]
-Description = Example scope for demonstration purposes
+Description=Example scope for demonstration purposes
 
 [Scope]
-Slice = example.slice
+Slice=example.slice
 ```
 
 ### Deleting a Service
@@ -268,6 +268,75 @@ This will remove all files matching the service name in the systemd directory.
 - `.slice` - Slice configuration
 - `.scope` - Scope configuration
 
+## Development
+
+### Running Tests
+
+This project includes comprehensive test coverage using pytest. To run the tests:
+
+```bash
+# Install test dependencies
+pip install -e ".[test]"
+
+# Run all tests
+pytest tests/
+
+# Run tests with coverage
+pytest tests/ --cov=service_config_foundry --cov-report=term-missing
+
+# Run tests with coverage report in HTML
+pytest tests/ --cov=service_config_foundry --cov-report=html
+```
+
+### Development Setup
+
+For development, install the package in development mode with all dependencies:
+
+```bash
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Install pre-commit hooks
+pre-commit install
+
+# Run pre-commit on all files
+pre-commit run --all-files
+```
+
+### Using Make Commands
+
+The project includes a Makefile for common development tasks:
+
+```bash
+# Install for development
+make dev-install
+
+# Run tests
+make test
+
+# Run tests with coverage
+make test-cov
+
+# Format code
+make format
+
+# Run linting
+make lint
+
+# Clean build artifacts
+make clean
+```
+
+### GitHub Actions
+
+The project includes GitHub Actions workflows that:
+
+- Run tests on every push and pull request
+- Test against multiple Python versions (3.8-3.12)
+- Check code formatting and linting
+- Generate coverage reports
+- Automatically publish to PyPI on tagged releases
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
@@ -275,6 +344,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contributing
 
 Contributions are welcome! If you encounter any issues or have suggestions for improvement, please open an issue or submit a pull request.
+
+Before contributing:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with appropriate tests
+4. Ensure all tests pass
+5. Submit a pull request
 
 ## Contact
 
