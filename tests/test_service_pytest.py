@@ -144,8 +144,8 @@ class TestServiceSystemctlCommands:
 class TestServiceCreate:
     """Test cases for service creation."""
     
-    @patch('service_config_foundry.service.Service._Service__service_with_name_exists')
-    @patch('service_config_foundry.service.Service.replace')
+    @patch.object(Service, '_Service__service_with_name_exists')
+    @patch.object(Service, 'replace')
     def test_create_new_service(self, mock_replace, mock_exists):
         """Test creating a new service when none exists."""
         mock_exists.return_value = []
@@ -153,7 +153,7 @@ class TestServiceCreate:
         service.create()
         mock_replace.assert_called_once()
     
-    @patch('service_config_foundry.service.Service._Service__service_with_name_exists')
+    @patch.object(Service, '_Service__service_with_name_exists')
     def test_create_existing_service_without_force(self, mock_exists):
         """Test creating service when it already exists without force flag."""
         mock_exists.return_value = ["test-service.service"]
@@ -161,8 +161,8 @@ class TestServiceCreate:
         with pytest.raises(ValueError, match="Service for test-service already exists"):
             service.create()
     
-    @patch('service_config_foundry.service.Service._Service__service_with_name_exists')
-    @patch('service_config_foundry.service.Service.replace')
+    @patch.object(Service, '_Service__service_with_name_exists')
+    @patch.object(Service, 'replace')
     def test_create_existing_service_with_force(self, mock_replace, mock_exists):
         """Test creating service when it already exists with force flag."""
         mock_exists.return_value = ["test-service.service"]
@@ -211,9 +211,9 @@ class TestServiceDelete:
 class TestServiceReplace:
     """Test cases for service replacement."""
     
-    @patch('service_config_foundry.service.Service.delete')
-    @patch('service_config_foundry.service.Service._Service__file_configs')
-    @patch('service_config_foundry.service.Service._Service__get_path')
+    @patch.object(Service, 'delete')
+    @patch.object(Service, '_Service__file_configs')
+    @patch.object(Service, '_Service__get_path')
     @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_replace_service_basic(self, mock_file, mock_run_command, mock_get_path, 
@@ -237,11 +237,11 @@ class TestServiceReplace:
         # Verify systemctl daemon-reload was called
         mock_run_command.assert_called_with("systemctl daemon-reload")
     
-    @patch('service_config_foundry.service.Service.delete')
-    @patch('service_config_foundry.service.Service._Service__file_configs')
-    @patch('service_config_foundry.service.Service._Service__get_path')
-    @patch('service_config_foundry.service.Service.start_service')
-    @patch('service_config_foundry.service.Service.enable_service_at_startup')
+    @patch.object(Service, 'delete')
+    @patch.object(Service, '_Service__file_configs')
+    @patch.object(Service, '_Service__get_path')
+    @patch.object(Service, 'start_service')
+    @patch.object(Service, 'enable_service_at_startup')
     @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_replace_with_auto_start_and_enable(self, mock_file, mock_run_command, 
@@ -271,10 +271,10 @@ class TestServiceUpdate:
             service.update()
     
     @patch('os.listdir')
-    @patch('service_config_foundry.service.CaseSensitiveConfigParser')
-    @patch('service_config_foundry.service.Service._Service__file_configs')
-    @patch('service_config_foundry.service.Service._Service__add_attributes')
-    @patch('service_config_foundry.service.Service.replace')
+    @patch.object(service_module, 'CaseSensitiveConfigParser')
+    @patch.object(Service, '_Service__file_configs')
+    @patch.object(Service, '_Service__add_attributes')
+    @patch.object(Service, 'replace')
     @patch.object(service_module, 'merge_dicts')
     def test_update_existing_service(self, mock_merge, mock_replace, mock_add_attrs, 
                                      mock_file_configs, mock_config_parser, mock_listdir):
@@ -318,9 +318,9 @@ class TestServiceFileConfigs:
 class TestServiceBooleanHandling:
     """Test cases for boolean value handling in service files."""
     
-    @patch('service_config_foundry.service.Service.delete')
-    @patch('service_config_foundry.service.Service._Service__file_configs')
-    @patch('service_config_foundry.service.Service._Service__get_path')
+    @patch.object(Service, 'delete')
+    @patch.object(Service, '_Service__file_configs')
+    @patch.object(Service, '_Service__get_path')
     @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_boolean_values_converted_to_lowercase_single_values(self, mock_file, mock_run_command, 
@@ -354,9 +354,9 @@ class TestServiceBooleanHandling:
         assert "Persistent=True" not in content, "Found uppercase 'True' instead of lowercase"
         assert "WakeSystem=False" not in content, "Found uppercase 'False' instead of lowercase"
     
-    @patch('service_config_foundry.service.Service.delete')
-    @patch('service_config_foundry.service.Service._Service__file_configs')
-    @patch('service_config_foundry.service.Service._Service__get_path')
+    @patch.object(Service, 'delete')
+    @patch.object(Service, '_Service__file_configs')
+    @patch.object(Service, '_Service__get_path')
     @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_boolean_values_converted_to_lowercase_list_values(self, mock_file, mock_run_command, 
