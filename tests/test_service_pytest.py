@@ -78,7 +78,7 @@ class TestServicePaths:
 class TestServiceFileExistence:
     """Test cases for checking service file existence."""
     
-    @patch('service_config_foundry.service.os.listdir')
+    @patch('os.listdir')
     def test_service_with_name_exists_true(self, mock_listdir):
         """Test when service files with the name exist."""
         mock_listdir.return_value = [
@@ -91,7 +91,7 @@ class TestServiceFileExistence:
         expected_files = ["test-service.service", "test-service.timer"]
         assert existing_files == expected_files
     
-    @patch('service_config_foundry.service.os.listdir')
+    @patch('os.listdir')
     def test_service_with_name_exists_false(self, mock_listdir):
         """Test when no service files with the name exist."""
         mock_listdir.return_value = [
@@ -102,7 +102,7 @@ class TestServiceFileExistence:
         existing_files = service._Service__service_with_name_exists()
         assert existing_files == []
     
-    @patch('service_config_foundry.service.os.listdir')
+    @patch('os.listdir')
     def test_service_with_name_exists_empty_directory(self, mock_listdir):
         """Test when directory is empty."""
         mock_listdir.return_value = []
@@ -169,9 +169,9 @@ class TestServiceCreate:
 class TestServiceDelete:
     """Test cases for service deletion."""
     
-    @patch('service_config_foundry.service.os.listdir')
-    @patch('service_config_foundry.service.os.remove')
-    @patch('service_config_foundry.service.os.path.join')
+    @patch('os.listdir')
+    @patch('os.remove')
+    @patch('os.path.join')
     def test_delete_service_files(self, mock_join, mock_remove, mock_listdir):
         """Test deleting service files."""
         mock_listdir.return_value = [
@@ -189,9 +189,9 @@ class TestServiceDelete:
         mock_remove.assert_any_call(".//test-service.service")
         mock_remove.assert_any_call(".//test-service.timer")
     
-    @patch('service_config_foundry.service.os.listdir')
-    @patch('service_config_foundry.service.os.remove')
-    @patch('service_config_foundry.service.sys.exit')
+    @patch('os.listdir')
+    @patch('os.remove')
+    @patch('sys.exit')
     def test_delete_permission_error(self, mock_exit, mock_remove, mock_listdir):
         """Test handling permission errors during deletion."""
         mock_listdir.return_value = ["test-service.service"]
@@ -256,7 +256,7 @@ class TestServiceReplace:
 class TestServiceUpdate:
     """Test cases for service updates."""
     
-    @patch('service_config_foundry.service.os.listdir')
+    @patch('os.listdir')
     def test_update_no_existing_service(self, mock_listdir):
         """Test updating when no existing service files are found."""
         mock_listdir.return_value = []
@@ -265,7 +265,7 @@ class TestServiceUpdate:
         with pytest.raises(ValueError, match="No service found for test-service"):
             service.update()
     
-    @patch('service_config_foundry.service.os.listdir')
+    @patch('os.listdir')
     @patch('service_config_foundry.service.CaseSensitiveConfigParser')
     @patch('service_config_foundry.service.Service._Service__file_configs')
     @patch('service_config_foundry.service.Service._Service__add_attributes')
