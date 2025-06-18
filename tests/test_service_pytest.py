@@ -6,6 +6,11 @@ from service_config_foundry.service import Service
 from service_config_foundry.service_location import ServiceLocation
 from service_config_foundry.file_type import FileType
 
+# Import the actual service module to get the correct reference
+import sys
+# Get the Service class module directly
+service_module = sys.modules[Service.__module__]
+
 
 class TestServiceInitialization:
     """Test cases for Service class initialization."""
@@ -114,21 +119,21 @@ class TestServiceFileExistence:
 class TestServiceSystemctlCommands:
     """Test cases for systemctl command execution."""
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_enable_service_at_startup(self, mock_run_command):
         """Test enabling service at startup."""
         service = Service("test-service")
         service.enable_service_at_startup()
         mock_run_command.assert_called_once_with("systemctl enable test-service")
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_start_service(self, mock_run_command):
         """Test starting service."""
         service = Service("test-service")
         service.start_service()
         mock_run_command.assert_called_once_with("systemctl restart test-service")
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_status(self, mock_run_command):
         """Test getting service status."""
         service = Service("test-service")
@@ -209,7 +214,7 @@ class TestServiceReplace:
     @patch('service_config_foundry.service.Service.delete')
     @patch('service_config_foundry.service.Service._Service__file_configs')
     @patch('service_config_foundry.service.Service._Service__get_path')
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_replace_service_basic(self, mock_file, mock_run_command, mock_get_path, 
                                    mock_file_configs, mock_delete):
@@ -237,7 +242,7 @@ class TestServiceReplace:
     @patch('service_config_foundry.service.Service._Service__get_path')
     @patch('service_config_foundry.service.Service.start_service')
     @patch('service_config_foundry.service.Service.enable_service_at_startup')
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_replace_with_auto_start_and_enable(self, mock_file, mock_run_command, 
                                                 mock_enable, mock_start, mock_get_path, 
@@ -270,7 +275,7 @@ class TestServiceUpdate:
     @patch('service_config_foundry.service.Service._Service__file_configs')
     @patch('service_config_foundry.service.Service._Service__add_attributes')
     @patch('service_config_foundry.service.Service.replace')
-    @patch('service_config_foundry.service.merge_dicts')
+    @patch.object(service_module, 'merge_dicts')
     def test_update_existing_service(self, mock_merge, mock_replace, mock_add_attrs, 
                                      mock_file_configs, mock_config_parser, mock_listdir):
         """Test updating an existing service."""
@@ -316,7 +321,7 @@ class TestServiceBooleanHandling:
     @patch('service_config_foundry.service.Service.delete')
     @patch('service_config_foundry.service.Service._Service__file_configs')
     @patch('service_config_foundry.service.Service._Service__get_path')
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_boolean_values_converted_to_lowercase_single_values(self, mock_file, mock_run_command, 
                                                                 mock_get_path, mock_file_configs, mock_delete):
@@ -352,7 +357,7 @@ class TestServiceBooleanHandling:
     @patch('service_config_foundry.service.Service.delete')
     @patch('service_config_foundry.service.Service._Service__file_configs')
     @patch('service_config_foundry.service.Service._Service__get_path')
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     @patch('builtins.open', new_callable=mock_open)
     def test_boolean_values_converted_to_lowercase_list_values(self, mock_file, mock_run_command, 
                                                                mock_get_path, mock_file_configs, mock_delete):

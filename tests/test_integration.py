@@ -5,6 +5,11 @@ import shutil
 from unittest.mock import patch, MagicMock
 from service_config_foundry import Service, ServiceLocation
 
+# Import the actual service module to get the correct reference
+import sys
+# Get the Service class module directly
+service_module = sys.modules[Service.__module__]
+
 
 class TestServiceIntegration:
     """Integration tests for the Service class."""
@@ -24,7 +29,7 @@ class TestServiceIntegration:
         # Remove temporary directory
         shutil.rmtree(self.test_dir, ignore_errors=True)
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_create_simple_service(self, mock_run_command):
         """Test creating a simple service file."""
         service = Service("test-app", service_location=ServiceLocation.TEST, 
@@ -63,7 +68,7 @@ class TestServiceIntegration:
         # Verify systemctl daemon-reload was called
         mock_run_command.assert_called_with("systemctl daemon-reload")
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_create_service_with_timer(self, mock_run_command):
         """Test creating a service with a timer file."""
         service = Service("backup-job", service_location=ServiceLocation.TEST, 
@@ -101,7 +106,7 @@ class TestServiceIntegration:
             assert "[Install]" in content
             assert "WantedBy=timers.target" in content
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_create_service_with_socket(self, mock_run_command):
         """Test creating a service with a socket file."""
         service = Service("web-server", service_location=ServiceLocation.TEST, 
@@ -142,7 +147,7 @@ class TestServiceIntegration:
             assert "[Install]" in content
             assert "WantedBy=sockets.target" in content
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_update_existing_service(self, mock_run_command):
         """Test updating an existing service."""
         service = Service("update-test", service_location=ServiceLocation.TEST, 
@@ -177,7 +182,7 @@ class TestServiceIntegration:
             assert "Type=simple" in content  # Should preserve original value
             assert "WantedBy=multi-user.target" in content  # Should preserve original value
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_replace_existing_service(self, mock_run_command):
         """Test replacing an existing service."""
         service = Service("replace-test", service_location=ServiceLocation.TEST, 
@@ -225,7 +230,7 @@ class TestServiceIntegration:
         # Timer file should no longer exist
         assert not os.path.exists(timer_file_path)
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_delete_service(self, mock_run_command):
         """Test deleting a service."""
         service = Service("delete-test", service_location=ServiceLocation.TEST, 
@@ -264,7 +269,7 @@ class TestServiceIntegration:
         assert not os.path.exists(timer_file_path)
         assert not os.path.exists(socket_file_path)
     
-    @patch('service_config_foundry.service.run_command')
+    @patch.object(service_module, 'run_command')
     def test_create_mount_and_automount(self, mock_run_command):
         """Test creating mount and automount files."""
         service = Service("mount-test", service_location=ServiceLocation.TEST, 
