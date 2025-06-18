@@ -1,10 +1,10 @@
 import os
 import sys
-from .sections import *
-from .service_location import ServiceLocation
-from .file_type import File, FileType
-from .utils import convert_to_snake_case, merge_dicts, run_command
-from .config_parser import CaseSensitiveConfigParser
+from .sections import * # type: ignore
+from .service_location import ServiceLocation # type: ignore
+from .file_type import File, FileType # type: ignore
+from .utils import convert_to_snake_case, merge_dicts, run_command # type: ignore
+from .config_parser import CaseSensitiveConfigParser # type: ignore
 
 # The `Service` class represents a system service with various configuration files
 # (e.g., service, socket, timer) and provides methods to create, update, replace,
