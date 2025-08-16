@@ -11,4 +11,3 @@ class Timer:
         self.unit = None
         self.persistent = None
         self.wake_system = None
-        

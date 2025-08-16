@@ -1,10 +1,13 @@
 import os
 import sys
-from .sections import * # type: ignore
-from .service_location import ServiceLocation # type: ignore
-from .file_type import File, FileType # type: ignore
-from .utils import convert_to_snake_case, merge_dicts, run_command # type: ignore
-from .config_parser import CaseSensitiveConfigParser # type: ignore
+
+from .config_parser import CaseSensitiveConfigParser  # type: ignore
+from .file_type import File, FileType  # type: ignore
+from .sections import *  # type: ignore
+from .service_location import ServiceLocation  # type: ignore
+from .utils import (convert_to_snake_case, merge_dicts,  # type: ignore
+                    run_command)
+
 
 # The `Service` class represents a system service with various configuration files
 # (e.g., service, socket, timer) and provides methods to create, update, replace,
@@ -12,7 +15,14 @@ from .config_parser import CaseSensitiveConfigParser # type: ignore
 class Service:
     # Initializes a Service instance with a name, location, and overwrite flag.
     # Sets up default file types associated with the service.
-    def __init__(self, name, service_location=ServiceLocation.GLOBAL, auto_start=True, enable_at_startup=False, force_overwrite=False):
+    def __init__(
+        self,
+        name,
+        service_location=ServiceLocation.GLOBAL,
+        auto_start=True,
+        enable_at_startup=False,
+        force_overwrite=False,
+    ):
         self.name = name
         self._service_location = service_location
         self._force_overwrite = force_overwrite
@@ -33,15 +43,27 @@ class Service:
 
     # Returns the full path for a specific configuration file.
     def __get_path(self, file):
-        return self._service_location.directory() + "/" + file._file_type.file_name(self.name)
-    
+        return (
+            self._service_location.directory()
+            + "/"
+            + file._file_type.file_name(self.name)
+        )
+
     # Yields the configurations of all file types, optionally checking requirements.
     def __file_configs(self, requirement_check=True):
-        for file in [self.service_file, self.socket_file, self.mount_file, self.automount_file, self.swap_file, self.path_file, self.timer_file]:
+        for file in [
+            self.service_file,
+            self.socket_file,
+            self.mount_file,
+            self.automount_file,
+            self.swap_file,
+            self.path_file,
+            self.timer_file,
+        ]:
             config = file.get_config(requirement_check=requirement_check)
             if config:
                 yield file, config
-    
+
     # Checks if any files for the service name already exist in the directory.
     def __service_with_name_exists(self):
         files = []
@@ -49,24 +71,24 @@ class Service:
             if file.startswith(f"{self.name}."):
                 files.append(file)
         return files
-    
+
     # Adds attributes to a file based on the given configuration.
     def __add_attributes(self, file, config):
         file_tag = file.split(".")[-1]
         for section, unit in config.items():
             for key, value in unit.items():
                 file_tag_dict = {
-                    "service": self.service_file, 
-                    "socket": self.socket_file, 
-                    "target": self.target_file, 
-                    "mount": self.mount_file, 
-                    "automount": self.automount_file, 
-                    "swap": self.swap_file, 
-                    "path": self.path_file, 
+                    "service": self.service_file,
+                    "socket": self.socket_file,
+                    "target": self.target_file,
+                    "mount": self.mount_file,
+                    "automount": self.automount_file,
+                    "swap": self.swap_file,
+                    "path": self.path_file,
                     "timer": self.timer_file,
                     "device": self.device_file,
                     "slice": self.slice_file,
-                    "scope": self.scope_file
+                    "scope": self.scope_file,
                 }
 
                 file_type = file_tag_dict.get(file_tag, None)
@@ -76,16 +98,21 @@ class Service:
                 section_obj = getattr(file_type, section.lower(), None)
                 if section_obj:
                     setattr(section_obj, convert_to_snake_case(key), value)
-    
+
     # Enables the service to start at boot time.
     def enable_service_at_startup(self):
         run_command(f"systemctl enable {self.name}")
-    
+
+        # We may also need to enable the timer if it exists
+        timer_path = self.__get_path(self.timer_file)
+        if os.path.exists(timer_path):
+            run_command(f"systemctl enable {self.name}.timer")
+
     # Starts the service.
     def start_service(self):
         # Restart the service to apply the new configurations. This will work even if the service is new.
         run_command(f"systemctl restart {self.name}")
-    
+
     # Displays the status of the service.
     def status(self):
         run_command(f"systemctl status {self.name}", use_sudo=False)
@@ -94,7 +121,7 @@ class Service:
     def create(self):
         if self.__service_with_name_exists() and not self._force_overwrite:
             raise ValueError(f"Service for {self.name} already exists")
-        
+
         self.replace()
 
     # Deletes all files associated with the service name.
@@ -104,13 +131,15 @@ class Service:
                 try:
                     os.remove(os.path.join(self._service_location.directory(), file))
                 except PermissionError:
-                    print(f"Permission denied: cannot write to {file}. Try running as root or using sudo.")
+                    print(
+                        f"Permission denied: cannot write to {file}. Try running as root or using sudo."
+                    )
                     sys.exit(1)
 
     # Replaces the existing service configuration files with new ones.
     def replace(self):
         config_and_path = {}
-        
+
         # Prepare configurations and paths for atomic replacement
         for file, config_dict in self.__file_configs(requirement_check=False):
             path = self.__get_path(file)
@@ -137,7 +166,9 @@ class Service:
                                     f.write(f"{key}={value}\n")
                         f.write("\n")
             except PermissionError:
-                print(f"Permission denied: cannot write to {path}. Try running as root or using sudo.")
+                print(
+                    f"Permission denied: cannot write to {path}. Try running as root or using sudo."
+                )
                 sys.exit(1)
 
         # Reload the systemd daemon to apply changes
@@ -151,14 +182,18 @@ class Service:
 
     # Updates the service with new configurations.
     def update(self):
-        temp_service = Service(name=self.name, service_location=self._service_location, force_overwrite=self._force_overwrite)
+        temp_service = Service(
+            name=self.name,
+            service_location=self._service_location,
+            force_overwrite=self._force_overwrite,
+        )
 
         # Find relevant files associated with the service.
         relevant_files = []
         for file in os.listdir(temp_service._service_location.directory()):
             if file.startswith(f"{temp_service.name}."):
                 relevant_files.append(file)
-        
+
         if not relevant_files:
             raise ValueError(f"No service found for {temp_service.name}")
 
@@ -167,7 +202,7 @@ class Service:
         for file, config_dict in self.__file_configs(requirement_check=False):
             path = self.__get_path(file)
             config_and_path[path] = config_dict
-        
+
         # Add attributes from relevant files to the temporary service.
         for file in relevant_files:
             config = CaseSensitiveConfigParser()
@@ -179,13 +214,15 @@ class Service:
         for file, config_dict in temp_service.__file_configs(requirement_check=False):
             path = temp_service.__get_path(file)
             original_config_and_path[path] = config_dict
-        
+
         final_config_and_path = {}
-        for path in set(original_config_and_path.keys()).union(set(config_and_path.keys())):
+        for path in set(original_config_and_path.keys()).union(
+            set(config_and_path.keys())
+        ):
             config_dict = config_and_path.get(path, None)
             temp_config_dict = original_config_and_path.get(path, None)
             final_config_and_path[path] = merge_dicts(temp_config_dict, config_dict)
-        
+
         # Update attributes and replace the configuration files.
         for path, _ in final_config_and_path.items():
             file = os.path.basename(path)

@@ -9,4 +9,3 @@ class Path:
         self.unit = None
         self.make_directory = None
         self.directory_mode = None
-        

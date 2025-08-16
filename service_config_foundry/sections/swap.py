@@ -5,4 +5,3 @@ class Swap:
         self.priority = None
         self.options = None
         self.timeout_sec = None
-        

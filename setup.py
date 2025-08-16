@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages # type: ignore
+from setuptools import find_packages, setup  # type: ignore
 
 # Load the long description from README.md
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -29,7 +29,7 @@ setup(
     extras_require={
         "test": [
             "pytest>=7.0.0",
-            "pytest-mock>=3.10.0", 
+            "pytest-mock>=3.10.0",
             "pytest-cov>=4.0.0",
             "flake8>=6.0.0",
             "black>=23.0.0",
@@ -38,7 +38,7 @@ setup(
         "dev": [
             "pytest>=7.0.0",
             "pytest-mock>=3.10.0",
-            "pytest-cov>=4.0.0", 
+            "pytest-cov>=4.0.0",
             "flake8>=6.0.0",
             "black>=23.0.0",
             "isort>=5.12.0",

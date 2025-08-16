@@ -1,5 +1,6 @@
 import enum
 
+
 # `ServiceLocation` is an enumeration that represents different systemd service locations.
 # Each location corresponds to a specific directory in the filesystem where systemd service
 # files are stored or managed.

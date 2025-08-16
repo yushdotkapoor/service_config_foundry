@@ -1,11 +1,11 @@
+from collections import OrderedDict, defaultdict
 from configparser import ConfigParser
-from collections import defaultdict, OrderedDict
 
 
 class CaseSensitiveConfigParser(ConfigParser):
     def __init__(self, *args, **kwargs):
         # Disable interpolation to prevent issues with list values
-        kwargs['interpolation'] = None
+        kwargs["interpolation"] = None
         super().__init__(*args, **kwargs)
         self._dict = OrderedDict
 
@@ -29,7 +29,9 @@ class CaseSensitiveConfigParser(ConfigParser):
                     self._sections[cur_section] = defaultdict(list)
             else:
                 if cur_section is None:
-                    raise ValueError(f"Missing section header in {fpname} at line {lineno}")
+                    raise ValueError(
+                        f"Missing section header in {fpname} at line {lineno}"
+                    )
                 key, _, value = line.partition("=")
                 key = key.strip()
                 value = value.strip()
@@ -60,9 +62,10 @@ class CaseSensitiveConfigParser(ConfigParser):
         if section not in self._sections:
             raise KeyError(f"Section '{section}' not found")
         # Section-specific case: return all key-value pairs in the section
-        return ((key, "\n".join(values) if isinstance(values, list) else values)
-                for key, values in self._sections[section].items())
-
+        return (
+            (key, "\n".join(values) if isinstance(values, list) else values)
+            for key, values in self._sections[section].items()
+        )
 
     def write(self, fp):
         """Override the write method to handle lists for duplicate keys."""

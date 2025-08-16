@@ -1,8 +1,10 @@
-import pytest
-import tempfile
 import os
 import shutil
+import tempfile
 from unittest.mock import MagicMock
+
+import pytest
+
 from service_config_foundry.service_location import ServiceLocation
 
 
@@ -27,19 +29,14 @@ def mock_service_location(temp_service_directory):
 def sample_service_config():
     """Provide a sample service configuration for testing."""
     return {
-        "Unit": {
-            "Description": "Test Service",
-            "After": "network.target"
-        },
+        "Unit": {"Description": "Test Service", "After": "network.target"},
         "Service": {
             "Type": "simple",
             "ExecStart": "/usr/bin/test-app",
             "User": "testuser",
-            "Restart": "always"
+            "Restart": "always",
         },
-        "Install": {
-            "WantedBy": "multi-user.target"
-        }
+        "Install": {"WantedBy": "multi-user.target"},
     }
 
 
@@ -47,16 +44,9 @@ def sample_service_config():
 def sample_timer_config():
     """Provide a sample timer configuration for testing."""
     return {
-        "Unit": {
-            "Description": "Test Timer"
-        },
-        "Timer": {
-            "OnCalendar": "daily",
-            "Persistent": "true"
-        },
-        "Install": {
-            "WantedBy": "timers.target"
-        }
+        "Unit": {"Description": "Test Timer"},
+        "Timer": {"OnCalendar": "daily", "Persistent": "true"},
+        "Install": {"WantedBy": "timers.target"},
     }
 
 
@@ -64,24 +54,20 @@ def sample_timer_config():
 def sample_socket_config():
     """Provide a sample socket configuration for testing."""
     return {
-        "Unit": {
-            "Description": "Test Socket"
-        },
+        "Unit": {"Description": "Test Socket"},
         "Socket": {
             "ListenStream": "8080",
             "SocketUser": "www-data",
-            "SocketGroup": "www-data"
+            "SocketGroup": "www-data",
         },
-        "Install": {
-            "WantedBy": "sockets.target"
-        }
+        "Install": {"WantedBy": "sockets.target"},
     }
 
 
 @pytest.fixture
 def mock_run_command():
     """Mock the run_command function to prevent actual systemctl calls."""
-    with pytest.mock.patch('service_config_foundry.service.run_command') as mock:
+    with pytest.mock.patch("service_config_foundry.service.run_command") as mock:
         mock.return_value = MagicMock(returncode=0, stdout="", stderr="")
         yield mock
 
@@ -89,18 +75,18 @@ def mock_run_command():
 @pytest.fixture
 def mock_os_operations():
     """Mock OS operations for testing without file system effects."""
-    with pytest.mock.patch('service_config_foundry.service.os.listdir') as mock_listdir, \
-         pytest.mock.patch('service_config_foundry.service.os.remove') as mock_remove, \
-         pytest.mock.patch('service_config_foundry.service.os.path.join') as mock_join:
-        
+    with pytest.mock.patch(
+        "service_config_foundry.service.os.listdir"
+    ) as mock_listdir, pytest.mock.patch(
+        "service_config_foundry.service.os.remove"
+    ) as mock_remove, pytest.mock.patch(
+        "service_config_foundry.service.os.path.join"
+    ) as mock_join:
+
         mock_listdir.return_value = []
         mock_join.side_effect = lambda a, b: f"{a}/{b}"
-        
-        yield {
-            'listdir': mock_listdir,
-            'remove': mock_remove,
-            'join': mock_join
-        }
+
+        yield {"listdir": mock_listdir, "remove": mock_remove, "join": mock_join}
 
 
 # Test markers for categorizing tests
