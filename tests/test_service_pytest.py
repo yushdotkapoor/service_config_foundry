@@ -127,12 +127,21 @@ class TestServiceSystemctlCommands:
         service.enable_service_at_startup()
         mock_run_command.assert_called_once_with("systemctl enable test-service")
 
+    @patch("os.path.exists", return_value=False)
     @patch.object(service_module, "run_command")
-    def test_start_service(self, mock_run_command):
-        """Test starting service."""
+    def test_start_service(self, mock_run_command, mock_exists):
+        """Test starting a service with no timer restarts the service unit."""
         service = Service("test-service")
         service.start_service()
         mock_run_command.assert_called_once_with("systemctl restart test-service")
+
+    @patch("os.path.exists", return_value=True)
+    @patch.object(service_module, "run_command")
+    def test_start_service_with_timer(self, mock_run_command, mock_exists):
+        """Test starting a timer-driven service restarts the timer, not the service."""
+        service = Service("test-service")
+        service.start_service()
+        mock_run_command.assert_called_once_with("systemctl restart test-service.timer")
 
     @patch.object(service_module, "run_command")
     def test_status(self, mock_run_command):

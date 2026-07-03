@@ -108,10 +108,15 @@ class Service:
         if os.path.exists(timer_path):
             run_command(f"systemctl enable {self.name}.timer")
 
-    # Starts the service.
+    # Starts the service, or the timer that drives it when one exists.
     def start_service(self):
-        # Restart the service to apply the new configurations. This will work even if the service is new.
-        run_command(f"systemctl restart {self.name}")
+        # Start the timer to activate the schedule; a plain service restart
+        # would run once and go inactive until reboot. Works when new too.
+        timer_path = self.__get_path(self.timer_file)
+        if os.path.exists(timer_path):
+            run_command(f"systemctl restart {self.name}.timer")
+        else:
+            run_command(f"systemctl restart {self.name}")
 
     # Displays the status of the service.
     def status(self):
