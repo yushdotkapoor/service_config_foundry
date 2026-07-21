@@ -1,4 +1,3 @@
-import os
 import shutil
 import tempfile
 from unittest.mock import MagicMock
@@ -82,7 +81,6 @@ def mock_os_operations():
     ) as mock_remove, pytest.mock.patch(
         "service_config_foundry.service.os.path.join"
     ) as mock_join:
-
         mock_listdir.return_value = []
         mock_join.side_effect = lambda a, b: f"{a}/{b}"
 

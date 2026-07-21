@@ -1,11 +1,11 @@
-import subprocess
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-from service_config_foundry.utils import (convert_to_camel_case,
-                                          convert_to_snake_case, merge_dicts,
-                                          run_command)
+from service_config_foundry.utils import (
+    convert_to_camel_case,
+    convert_to_snake_case,
+    merge_dicts,
+    run_command,
+)
 
 
 class TestConvertToCamelCase:
@@ -141,7 +141,7 @@ class TestRunCommand:
         mock_process.pid = 12345
         mock_popen.return_value = mock_process
 
-        result = run_command("echo hello", use_sudo=True)
+        run_command("echo hello", use_sudo=True)
 
         mock_popen.assert_called_once()
         # Check that sudo was prepended
@@ -172,7 +172,7 @@ class TestRunCommand:
         mock_process.pid = 12345
         mock_popen.return_value = mock_process
 
-        result = run_command("sleep 10", use_sudo=False)
+        run_command("sleep 10", use_sudo=False)
 
         mock_killpg.assert_called_once()
         mock_process.terminate.assert_called()

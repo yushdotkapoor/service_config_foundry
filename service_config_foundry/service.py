@@ -3,10 +3,8 @@ import sys
 
 from .config_parser import CaseSensitiveConfigParser  # type: ignore
 from .file_type import File, FileType  # type: ignore
-from .sections import *  # type: ignore
 from .service_location import ServiceLocation  # type: ignore
-from .utils import (convert_to_snake_case, merge_dicts,  # type: ignore
-                    run_command)
+from .utils import convert_to_snake_case, merge_dicts, run_command  # type: ignore
 
 
 # The `Service` class represents a system service with various configuration files
@@ -118,7 +116,8 @@ class Service:
         if os.path.exists(timer_path):
             run_command(f"systemctl restart {self.name}.timer")
         else:
-            # Restart the service to apply the new configurations. This will work even if the service is new.
+            # Restart the service to apply the new configurations. This works
+            # even if the service is new.
             run_command(f"systemctl restart {self.name}")
 
     # Displays the status of the service.
@@ -140,7 +139,8 @@ class Service:
                     os.remove(os.path.join(self._service_location.directory(), file))
                 except PermissionError:
                     print(
-                        f"Permission denied: cannot write to {file}. Try running as root or using sudo."
+                        f"Permission denied: cannot write to {file}. "
+                        "Try running as root or using sudo."
                     )
                     sys.exit(1)
 
@@ -175,12 +175,13 @@ class Service:
                         f.write("\n")
             except PermissionError:
                 print(
-                    f"Permission denied: cannot write to {path}. Try running as root or using sudo."
+                    f"Permission denied: cannot write to {path}. "
+                    "Try running as root or using sudo."
                 )
                 sys.exit(1)
 
         # Reload the systemd daemon to apply changes
-        run_command(f"systemctl daemon-reload")
+        run_command("systemctl daemon-reload")
 
         if self._auto_start:
             self.start_service()

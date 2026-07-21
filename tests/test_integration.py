@@ -1,9 +1,10 @@
 import os
 import shutil
+
 # Import the actual service module to get the correct reference
 import sys
 import tempfile
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 

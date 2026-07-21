@@ -1,6 +1,16 @@
 import enum
 
-from .sections import *
+from .sections import (
+    Automount,
+    Install,
+    Mount,
+    Path,
+    ServiceSection,
+    Socket,
+    Swap,
+    Timer,
+    Unit,
+)
 from .utils import convert_to_camel_case
 
 
@@ -99,7 +109,8 @@ class FileType(enum.Enum):
         elif self == FileType.SCOPE:
             return section in ["Unit"]
 
-    # Checks if the required sections are present in the provided configuration dictionary.
+    # Checks if the required sections are present in the provided
+    # configuration dictionary.
     def check_requirements(self, config_dict):
         required = self.requirements()
         for section in required:
@@ -107,12 +118,12 @@ class FileType(enum.Enum):
                 raise ValueError(f"Section {section} is required in {self} file")
 
 
-# `FileType` is an enumeration that defines various systemd file types, such as service, socket, and timer.
-# Each file type corresponds to a specific configuration file in the systemd ecosystem.
+# `File` represents a single systemd file type, such as service, socket, or
+# timer. Each file type corresponds to a specific configuration file in the
+# systemd ecosystem.
 class File:
-
-    # Initializes default attributes for each file type. These attributes represent sections
-    # that may be included in the configuration for a file type.
+    # Initializes default attributes for each file type. These attributes
+    # represent sections that may be included in the configuration.
     def __init__(self, file_type, *args):
         self._file_type = file_type
         self._unit = None
@@ -125,7 +136,8 @@ class File:
         self._path = None
         self._timer = None
 
-    # Creates a configuration parser from the object's attributes and validates the requirements if specified.
+    # Creates a configuration parser from the object's attributes and
+    # validates the requirements if specified.
     def get_config(self, requirement_check):
         config_dict = {}
         # Whitelist specifies which attributes should be included in the configuration.
@@ -147,7 +159,8 @@ class File:
                 ]  # Exclude specific keys from the configuration.
                 for key, value in unit.__dict__.items():
                     if key not in blacklist and value is not None:
-                        # Convert keys to camel case and add them to the config dictionary.
+                        # Convert keys to camel case and add them to the
+                        # config dictionary.
                         config_dict.setdefault(unit.unit_name, {})[
                             convert_to_camel_case(key)
                         ] = value
@@ -156,7 +169,8 @@ class File:
         if not config_dict:
             return None
 
-        # Validate the configuration against the required sections if `requirement_check` is True.
+        # Validate the configuration against the required sections if
+        # `requirement_check` is True.
         if requirement_check:
             self._file_type.check_requirements(config_dict)
 

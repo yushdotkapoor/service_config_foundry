@@ -1,7 +1,5 @@
-import os
 # Import the actual service module to get the correct reference
 import sys
-import tempfile
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest

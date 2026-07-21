@@ -355,8 +355,8 @@ Before contributing:
 
 ## Contact
 
-- **Author**: Yush Kapoor  
-- **Email**: [yushdotkapoor@gmail.com](mailto:yushdotkapoor@gmail.com)  
+- **Author**: Yush Kapoor
+- **Email**: [yushdotkapoor@gmail.com](mailto:yushdotkapoor@gmail.com)
 - **GitHub**: [https://github.com/yushdotkapoor/service_config_foundry](https://github.com/yushdotkapoor/service_config_foundry)
 
 ## Acknowledgments

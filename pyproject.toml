@@ -14,7 +14,7 @@ keywords = ["systemd", "service", "linux", "system-administration"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9", 
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -35,17 +35,17 @@ Repository = "https://github.com/yushdotkapoor/service_config_foundry"
 [project.optional-dependencies]
 test = [
     "pytest>=7.0.0",
-    "pytest-mock>=3.10.0", 
+    "pytest-mock>=3.10.0",
     "pytest-cov>=4.0.0",
-    "flake8>=6.0.0",
+    "flake8>=7.1.0",
     "black>=23.0.0",
     "isort>=5.12.0",
 ]
 dev = [
     "pytest>=7.0.0",
     "pytest-mock>=3.10.0",
-    "pytest-cov>=4.0.0", 
-    "flake8>=6.0.0",
+    "pytest-cov>=4.0.0",
+    "flake8>=7.1.0",
     "black>=23.0.0",
     "isort>=5.12.0",
     "pre-commit>=3.0.0",

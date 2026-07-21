@@ -1,8 +1,6 @@
 import os
 import tempfile
 
-import pytest
-
 from service_config_foundry.config_parser import CaseSensitiveConfigParser
 
 

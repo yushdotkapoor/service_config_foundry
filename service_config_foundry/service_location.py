@@ -1,9 +1,9 @@
 import enum
 
 
-# `ServiceLocation` is an enumeration that represents different systemd service locations.
-# Each location corresponds to a specific directory in the filesystem where systemd service
-# files are stored or managed.
+# `ServiceLocation` is an enumeration that represents different systemd service
+# locations. Each location corresponds to a specific directory in the
+# filesystem where systemd service files are stored or managed.
 class ServiceLocation(enum.Enum):
     # Enumeration values for different service locations:
     # - GLOBAL: System-wide service files, typically for all users.
@@ -28,8 +28,8 @@ class ServiceLocation(enum.Enum):
             # which is used for temporary service files during system runtime.
             return "/run/systemd/system"
         elif self == ServiceLocation.USER:
-            # USER services are stored in the user's home directory under ~/.config/systemd/user,
-            # allowing for user-specific configurations.
+            # USER services are stored in the user's home directory under
+            # ~/.config/systemd/user, allowing for user-specific configurations.
             return "~/.config/systemd/user"
         elif self == ServiceLocation.TEST:
             # TEST location returns the current working directory for testing purposes.

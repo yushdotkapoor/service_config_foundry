@@ -55,7 +55,10 @@ class CaseSensitiveConfigParser(ConfigParser):
         return values
 
     def items(self, section=None, *, raw=False, vars=None):
-        """Override items to handle list values for both section-specific and global cases."""
+        """Override items to handle list values.
+
+        Covers both the section-specific and global cases.
+        """
         if section is None:
             # Global case: return all sections and their items
             return [(s, dict(self.items(s))) for s in self._sections]

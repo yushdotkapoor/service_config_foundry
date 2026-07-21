@@ -1,8 +1,16 @@
-import pytest
-
-from service_config_foundry.sections import (Automount, Install, Mount, Path,
-                                             Scope, ServiceSection, Slice,
-                                             Socket, Swap, Timer, Unit)
+from service_config_foundry.sections import (
+    Automount,
+    Install,
+    Mount,
+    Path,
+    Scope,
+    ServiceSection,
+    Slice,
+    Socket,
+    Swap,
+    Timer,
+    Unit,
+)
 
 
 class TestUnit:

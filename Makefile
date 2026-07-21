@@ -77,7 +77,7 @@ release:  ## Create a new release (defaults to patch)
 release-patch:  ## Create a patch release
 	bash release.bash patch
 
-release-minor:  ## Create a minor release  
+release-minor:  ## Create a minor release
 	bash release.bash minor
 
 release-major:  ## Create a major release

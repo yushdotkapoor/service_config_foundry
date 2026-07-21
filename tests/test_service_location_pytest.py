@@ -1,5 +1,3 @@
-import pytest
-
 from service_config_foundry.service_location import ServiceLocation
 
 
